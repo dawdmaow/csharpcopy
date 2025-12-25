@@ -19,6 +19,8 @@ public class DirectorySynchronizer(string sourcePath, string replicaPath, Logger
 
         try
         {
+            // Ignoring case since some filesystems are case-insensitive.
+
             if (string.Equals(_sourcePath, _replicaPath, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.Log($"ERROR: Source and replica directories cannot be the same: {_sourcePath}");
@@ -29,6 +31,13 @@ public class DirectorySynchronizer(string sourcePath, string replicaPath, Logger
                 _replicaPath.StartsWith(_sourcePath + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.Log($"ERROR: Replica directory cannot be a subdirectory of source directory");
+                return;
+            }
+
+            if (_sourcePath.StartsWith(_replicaPath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ||
+                _sourcePath.StartsWith(_replicaPath + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.Log($"ERROR: Source directory cannot be a subdirectory of replica directory");
                 return;
             }
 
